@@ -1,33 +1,95 @@
-# FPL Oran Bazlı Projeksiyon
+# AZ-FPL | Premier League Maç Projeksiyonları
 
-Angular istemci ve Cloudflare Worker API'sinden oluşan Premier League fikstür projeksiyon aracı.
+[Canlı uygulama](https://az-fpl.fpl-projections-tr.workers.dev/) · [API health check](https://az-fpl.fpl-projections-tr.workers.dev/health)
 
-## Başlatma
+Premier League'in yaklaşan fikstürleri için bahis piyasası verisini anlamlı maç projeksiyonlarına dönüştüren uçtan uca bir web uygulaması. Her maçta beklenen goller, iki takımın clean-sheet olasılığı ve en olası üç skor sunulur.
 
-1. `server/.dev.vars.example` dosyasını `server/.dev.vars` olarak kopyalayın. Odds entegrasyonu için The Odds API; cache için Upstash Redis değerlerini girin.
-2. `cd server; npm run dev` çalıştırın. Bu komut Angular production çıktısını üretir ve Worker'ı yerelde sunar.
-3. Wrangler'ın terminalde gösterdiği yerel adresi tarayıcıda açın.
+Bu proje, yalnızca bir arayüz değil; dış veri kaynaklarını güvenilir biçimde birleştiren, kota bilinci olan ve production'a alınmış bir Angular + TypeScript sistemi olarak tasarlandı.
 
-Geliştirme için Node.js 24 LTS kullanın. Sistemde bulunan Node 25, Angular tarafından desteklenen bir sürüm değildir.
+## Öne çıkanlar
 
-## Cache
+- Resmî FPL API'den yaklaşan gameweek fikstürlerini alır.
+- The Odds API'deki 1X2 ve 2.5 gol alt/üst marketlerini takım adları farklı olsa bile eşleştirir.
+- Bahis oranlarını implied probability'ye çevirir, bookmaker marjını temizler (*devig*) ve birden fazla kaynağın medyanını kullanır.
+- Poisson dağılımıyla ev/deplasman gol beklentisini, clean-sheet ihtimallerini ve olası skorları hesaplar.
+- Upstash Redis ile FPL verisini, bahis oranlarını ve nihai API yanıtını cache'leyerek API kotasını ve Worker CPU kullanımını korur.
+- Angular istemciyi ve `/api/fixtures` endpoint'ini tek bir Cloudflare Worker üzerinden sunar.
 
-Production ortamında FPL, odds ve projeksiyon cevapları Upstash Redis'te kısa süreli saklanır. Bu, API kotasını kullanıcılar ve birden fazla backend instance'ı arasında korur. Yerel geliştirmede Redis kurulana kadar bellek içi geçici cache kullanılabilir.
+## Mimari
 
-## Cloudflare Workers ile deploy
+```text
+Angular arayüzü
+      │
+Cloudflare Worker ── /api/fixtures
+      │
+      ├── Upstash Redis (cache)
+      ├── FPL API (fikstürler)
+      └── The Odds API (bahis marketleri)
+```
 
-Proje, Angular uygulaması ile API'yi tek bir Cloudflare Worker'da sunar. Bu sayede tarayıcı API'ye aynı alan adı üzerinden `/api/fixtures` ile ulaşır ve free tier'da uyuyan Node sunucusu yoktur.
+```text
+FPL fixture → Odds eşleştirme → Devig + medyan → Poisson fit → Maç projeksiyonu
+```
 
-1. `cd server` içinde `npx wrangler login` ile Cloudflare hesabınıza giriş yapın.
-2. Aşağıdaki değerleri Cloudflare Worker Secret olarak ekleyin. Değerleri kaynak koda veya Git'e yazmayın:
+## Teknoloji seçimi
 
-   ```powershell
-   npx wrangler secret put ODDS_API_KEY
-   npx wrangler secret put UPSTASH_REDIS_REST_URL
-   npx wrangler secret put UPSTASH_REDIS_REST_TOKEN
-   ```
+| Katman | Teknoloji |
+| --- | --- |
+| Frontend | Angular 22, TypeScript |
+| Backend | Cloudflare Workers, TypeScript |
+| Veri | FPL API, The Odds API |
+| Cache | Upstash Redis |
+| Test | Node test runner + `tsx` |
+| CI/CD | GitHub → Cloudflare Workers Builds |
 
-3. `npm run deploy` komutunu çalıştırın.
-4. Wrangler'ın verdiği `https://az-fpl.<hesap>.workers.dev/health` ve `/api/fixtures` adreslerini, ardından ana sayfayı doğrulayın.
+## Yerelde çalıştırma
 
-Workers'ta `PORT` veya `CLIENT_ORIGIN` değişkeni gerekmez; API ve arayüz aynı origin'de çalışır.
+Node.js 24 LTS kullanın. İstemci ve Worker bağımlılıklarını bir kez kurduktan sonra:
+
+```powershell
+cd C:\Users\USER\Documents\GitHub\AZ-FPL\client
+npm install
+
+cd ..\server
+npm install
+Copy-Item .dev.vars.example .dev.vars
+npm run dev
+```
+
+`server/.dev.vars` içinde aşağıdaki değerler bulunmalıdır; bu dosya Git'e eklenmez:
+
+```env
+ODDS_API_KEY=...
+UPSTASH_REDIS_REST_URL=...
+UPSTASH_REDIS_REST_TOKEN=...
+```
+
+## Kalite kontrolleri
+
+```powershell
+cd C:\Users\USER\Documents\GitHub\AZ-FPL\server
+npm run check
+npm test
+
+cd ..\client
+npm run build
+```
+
+Testler; takım adı eşleştirme, market seçimi, olasılık/devig hesabı, Poisson modeli ve Worker endpoint davranışını kapsar.
+
+## Deploy
+
+`main` dalına yapılan push'lar Cloudflare Workers Builds aracılığıyla otomatik olarak yayınlanır. Worker çalışma zamanı sırları (`ODDS_API_KEY`, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`) Cloudflare Dashboard'da Worker Secret olarak tutulur; kaynak kodda veya Git geçmişinde yer almaz.
+
+## Proje yapısı
+
+```text
+client/               Angular kullanıcı arayüzü
+server/src/           Worker, veri istemcileri ve projeksiyon modeli
+server/wrangler.jsonc Cloudflare Worker yapılandırması
+docs/                 Teknik tasarım ve model notları
+```
+
+## Notlar
+
+Bu proje öğrenme odaklı geliştirilmiştir. Hesaplama hattı, model varsayımları ve mimari kararlar için [teknik tasarım](docs/mvp-teknik-tasarim.md) ile [model spesifikasyonuna](docs/model-spesifikasyonu.md) göz atılabilir.
