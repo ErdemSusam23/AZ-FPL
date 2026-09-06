@@ -1,0 +1,10 @@
+server/.env
+server/.dev.vars
+client/dist/
+server/node_modules/
+client/node_modules/
+server/.wrangler/
+tools/
+AGENTS.md
+docs/HANDOFF.md
+docs/ogrenme-gunlugu.md

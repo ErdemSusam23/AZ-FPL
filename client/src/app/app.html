@@ -1,0 +1,40 @@
+<main>
+  <header>
+    <p class="eyebrow">Premier League · FPL</p>
+    <h1>Fikstür Projeksiyonları</h1>
+    <p class="intro">Bahis piyasalarından türetilen beklenen gol ve clean-sheet olasılıkları.</p>
+  </header>
+  <div class="toolbar">
+    @if (oddsUpdatedAt()) {
+      <p class="updated-at">Son oran güncellemesi: {{ oddsUpdatedAt() | date:'d MMM, HH:mm':'UTC':'tr-TR' }}</p>
+    }
+    <button type="button" (click)="reload()" [disabled]="loading()">{{ loading() ? 'Yükleniyor…' : 'Tekrar kontrol et' }}</button>
+  </div>
+  @if (loading() && fixtures().length === 0) {
+    <p class="state">Fikstür verisi yükleniyor…</p>
+  } @else if (error()) {
+    <section class="notice" aria-live="polite"><h2>Veri alınamadı</h2><p>{{ error() }}</p></section>
+  } @else {
+    <section class="notice">
+      <h2>Yaklaşan gameweek</h2>
+      @if (fixtures().length === 0) { <p>Yaklaşan gameweek için fikstür bulunamadı.</p> }
+      @else {
+        <table><thead><tr><th>Tarih</th><th>Maç</th><th>Beklenen gol</th><th>Clean sheet</th><th>En olası skorlar</th></tr></thead><tbody>
+          @for (fixture of fixtures(); track fixture.fixtureId) {
+            <tr>
+              <td>{{ fixture.kickoffUtc | date:'d MMM, HH:mm':'UTC':'tr-TR' }}</td>
+              <td>{{ fixture.homeTeam }} – {{ fixture.awayTeam }}</td>
+              @if (fixture.projection; as projection) {
+                <td>{{ projection.lambdaHome | number:'1.2-2' }} – {{ projection.lambdaAway | number:'1.2-2' }}</td>
+                <td>{{ projection.homeCleanSheet | percent:'1.0-0' }} – {{ projection.awayCleanSheet | percent:'1.0-0' }}</td>
+                <td>@for (score of projection.topScores; track $index) { <span class="score">{{ score.homeGoals }}–{{ score.awayGoals }} ({{ score.probability | percent:'1.0-0' }})</span> }</td>
+              } @else {
+                <td colspan="3">{{ fixture.status === 'match-unavailable' ? 'Odds etkinliği henüz yok' : 'Yeterli odds marketi yok' }}</td>
+              }
+            </tr>
+          }
+        </tbody></table>
+      }
+    </section>
+  }
+</main>

@@ -1,0 +1,22 @@
+{
+  "name": "fpl-projections-server",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "build:client": "npm --prefix ../client run build",
+    "dev": "npm run build:client && wrangler dev",
+    "deploy": "npm run build:client && wrangler deploy",
+    "check": "tsc --noEmit",
+    "test": "tsx --test src/team-matching.test.ts src/market-selection.test.ts src/probabilities.test.ts src/poisson.test.ts src/worker.test.ts"
+  },
+  "dependencies": {
+    "@upstash/redis": "^1.38.4"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260903.1",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "wrangler": "^4.0.0"
+  }
+}

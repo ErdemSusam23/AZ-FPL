@@ -1,0 +1,10 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "az-fpl",
+  "main": "src/worker.ts",
+  "compatibility_date": "2026-09-06",
+  "assets": {
+    "directory": "../client/dist/client/browser",
+    "binding": "ASSETS"
+  }
+}

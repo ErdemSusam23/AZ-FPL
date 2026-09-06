@@ -1,0 +1,14 @@
+:host { display: block; min-height: 100vh; }
+main { max-width: 960px; margin: 0 auto; padding: 5rem 1.5rem; }
+.eyebrow { color: #5d2db5; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; font-size: .8rem; }
+h1 { margin: .3rem 0; font-size: clamp(2.2rem, 6vw, 4rem); letter-spacing: -.04em; }
+.intro { color: #556; font-size: 1.1rem; }
+.toolbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-top: 2rem; }
+.updated-at { color: #556; font-size: .9rem; }
+button { border: 0; border-radius: 8px; background: #5d2db5; color: white; cursor: pointer; font: inherit; font-weight: 700; padding: .7rem 1rem; }
+button:disabled { cursor: wait; opacity: .65; }
+.notice, .state { margin-top: 3rem; padding: 1.5rem; border-radius: 12px; background: #f4f1fa; border: 1px solid #e1d8f4; }
+.notice h2 { margin-top: 0; }
+table { width: 100%; border-collapse: collapse; text-align: left; }
+th, td { padding: .8rem .3rem; border-top: 1px solid #ddd4ec; }
+.score { display: block; white-space: nowrap; }
