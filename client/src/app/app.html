@@ -1,39 +1,50 @@
-<main>
-  <header>
+<main class="page-shell">
+  <header class="hero">
     <p class="eyebrow">Premier League · FPL</p>
     <h1>Fikstür Projeksiyonları</h1>
-    <p class="intro">Bahis piyasalarından türetilen beklenen gol ve clean-sheet olasılıkları.</p>
+    <p class="intro">Piyasa oranlarından türetilen gol ve clean-sheet görünümü.</p>
+    <div class="hero-note"><span aria-hidden="true">✦</span> Bir sonraki gameweek için güncel model çıktısı</div>
   </header>
-  <div class="toolbar">
+  <div class="toolbar" aria-label="Veri kontrolleri">
     @if (oddsUpdatedAt()) {
-      <p class="updated-at">Son oran güncellemesi: {{ oddsUpdatedAt() | date:'d MMM, HH:mm':'UTC':'tr-TR' }}</p>
+      <p class="updated-at"><span class="status-dot" aria-hidden="true"></span> Oranlar: {{ oddsUpdatedAt() | date:'d MMM, HH:mm':'UTC':'tr-TR' }}</p>
     }
-    <button type="button" (click)="reload()" [disabled]="loading()">{{ loading() ? 'Yükleniyor…' : 'Tekrar kontrol et' }}</button>
+    <button type="button" (click)="reload()" [disabled]="loading()">{{ loading() ? 'Kontrol ediliyor…' : 'Verileri kontrol et' }}</button>
   </div>
   @if (loading() && fixtures().length === 0) {
     <p class="state">Fikstür verisi yükleniyor…</p>
   } @else if (error()) {
     <section class="notice" aria-live="polite"><h2>Veri alınamadı</h2><p>{{ error() }}</p></section>
   } @else {
-    <section class="notice">
-      <h2>Yaklaşan gameweek</h2>
+    <section class="fixtures-section" aria-labelledby="fixtures-title">
+      <div class="section-heading">
+        <div><p class="section-label">GAMEWEEK GÖRÜNÜMÜ</p><h2 id="fixtures-title">Yaklaşan maçlar</h2></div>
+        @if (fixtures().length > 0) { <p class="fixture-total">{{ fixtures().length }} maç</p> }
+      </div>
+      @if (fixtures().length > 0) {
+        <div class="summary-grid" aria-label="Projeksiyon özeti">
+          <div class="summary-card"><span>Toplam maç</span><strong>{{ fixtures().length }}</strong></div>
+          <div class="summary-card accent"><span>Projeksiyon hazır</span><strong>{{ projectedCount() }}</strong></div>
+          <div class="summary-card muted"><span>Odds bekleniyor</span><strong>{{ unavailableCount() }}</strong></div>
+        </div>
+      }
       @if (fixtures().length === 0) { <p>Yaklaşan gameweek için fikstür bulunamadı.</p> }
       @else {
-        <table><thead><tr><th>Tarih</th><th>Maç</th><th>Beklenen gol</th><th>Clean sheet</th><th>En olası skorlar</th></tr></thead><tbody>
+        <div class="table-wrap"><table><thead><tr><th>Tarih</th><th>Maç</th><th>Beklenen gol <span class="table-hint">Ev – Dep.</span></th><th>Clean sheet <span class="table-hint">Ev – Dep.</span></th><th>En olası skorlar</th></tr></thead><tbody>
           @for (fixture of fixtures(); track fixture.fixtureId) {
             <tr>
-              <td>{{ fixture.kickoffUtc | date:'d MMM, HH:mm':'UTC':'tr-TR' }}</td>
-              <td>{{ fixture.homeTeam }} – {{ fixture.awayTeam }}</td>
+              <td class="kickoff">{{ fixture.kickoffUtc | date:'d MMM':'UTC':'tr-TR' }}<span>{{ fixture.kickoffUtc | date:'HH:mm':'UTC':'tr-TR' }}</span></td>
+              <td class="teams"><strong>{{ fixture.homeTeam }}</strong><span class="versus">vs</span><strong>{{ fixture.awayTeam }}</strong></td>
               @if (fixture.projection; as projection) {
-                <td>{{ projection.lambdaHome | number:'1.2-2' }} – {{ projection.lambdaAway | number:'1.2-2' }}</td>
-                <td>{{ projection.homeCleanSheet | percent:'1.0-0' }} – {{ projection.awayCleanSheet | percent:'1.0-0' }}</td>
-                <td>@for (score of projection.topScores; track $index) { <span class="score">{{ score.homeGoals }}–{{ score.awayGoals }} ({{ score.probability | percent:'1.0-0' }})</span> }</td>
+                <td><span class="metric-value">{{ projection.lambdaHome | number:'1.2-2' }}</span><span class="metric-separator">–</span><span class="metric-value">{{ projection.lambdaAway | number:'1.2-2' }}</span></td>
+                <td><span class="clean-sheet">{{ projection.homeCleanSheet | percent:'1.0-0' }}</span><span class="metric-separator">–</span><span class="clean-sheet">{{ projection.awayCleanSheet | percent:'1.0-0' }}</span></td>
+                <td class="scores">@for (score of projection.topScores; track $index) { <span class="score">{{ score.homeGoals }}–{{ score.awayGoals }} <small>{{ score.probability | percent:'1.0-0' }}</small></span> }</td>
               } @else {
-                <td colspan="3">{{ fixture.status === 'match-unavailable' ? 'Odds etkinliği henüz yok' : 'Yeterli odds marketi yok' }}</td>
+                <td colspan="3"><span class="unavailable">{{ fixture.status === 'match-unavailable' ? 'Odds etkinliği henüz yok' : 'Yeterli odds marketi yok' }}</span></td>
               }
             </tr>
           }
-        </tbody></table>
+        </tbody></table></div>
       }
     </section>
   }

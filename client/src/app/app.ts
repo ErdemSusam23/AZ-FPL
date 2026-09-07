@@ -1,5 +1,5 @@
 import { DatePipe, DecimalPipe, PercentPipe } from '@angular/common';
-import { Component, signal } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 import { Fixture, FixturesService } from './services/fixtures';
 
 @Component({
@@ -13,6 +13,10 @@ export class App {
   protected readonly error = signal<string | null>(null);
   protected readonly fixtures = signal<Fixture[]>([]);
   protected readonly oddsUpdatedAt = signal<string | null>(null);
+  protected readonly projectedCount = computed(() =>
+    this.fixtures().filter((fixture) => fixture.status === 'projected').length,
+  );
+  protected readonly unavailableCount = computed(() => this.fixtures().length - this.projectedCount());
 
   constructor(private readonly fixturesService: FixturesService) {
     this.reload();
