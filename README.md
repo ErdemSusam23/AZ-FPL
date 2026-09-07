@@ -14,6 +14,8 @@ Bu proje, yalnızca bir arayüz değil; dış veri kaynaklarını güvenilir bi�
 - Poisson dağılımıyla ev/deplasman gol beklentisini, clean-sheet ihtimallerini ve olası skorları hesaplar.
 - Upstash Redis ile FPL verisini, bahis oranlarını ve nihai API yanıtını cache'leyerek API kotasını ve Worker CPU kullanımını korur.
 - Angular istemciyi ve `/api/fixtures` endpoint'ini tek bir Cloudflare Worker üzerinden sunar.
+- Fikstürleri güne göre gruplar; her takımı kulüp rengi ve uygulama paketindeki yerel rozetiyle gösterir.
+- Maç kartlarında takım bazında kazanma olasılığı, clean-sheet olasılığı ve beklenen gol değerini sunar.
 
 ## Mimari
 
@@ -85,10 +87,15 @@ Testler; takım adı eşleştirme, market seçimi, olasılık/devig hesabı, Poi
 
 ```text
 client/               Angular kullanıcı arayüzü
+client/public/badges/ FPL takım kodlarıyla adlandırılmış yerel kulüp rozetleri
 server/src/           Worker, veri istemcileri ve projeksiyon modeli
 server/wrangler.jsonc Cloudflare Worker yapılandırması
 docs/                 Teknik tasarım ve model notları
 ```
+
+## Lisans
+
+Bu proje [MIT License](LICENSE) ile lisanslanmıştır. Lisans; telif ve izin bildirimleri korunduğu sürece kodun kullanılmasına, değiştirilmesine ve dağıtılmasına izin verir.
 
 ## Notlar
 
