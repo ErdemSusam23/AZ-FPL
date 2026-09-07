@@ -34,7 +34,7 @@ export class App {
       error: (error: unknown) => {
         const message = typeof error === 'object' && error !== null && 'error' in error
           ? (error as { error?: { error?: string } }).error?.error : undefined;
-        this.error.set(message ?? 'API bağlantısı kurulamadı. Worker hizmetini kontrol edin.');
+        this.error.set(message ?? 'Veri bağlantısı kurulamadı. Bağlantınızı kontrol edip tekrar deneyin.');
         this.loading.set(false);
       },
     });

@@ -1,7 +1,7 @@
 <main class="page-shell">
   <header class="hero">
     <p class="eyebrow">Premier League · FPL</p>
-    <h1>Fikstür Projeksiyonları</h1>
+    <h1>FPL Fikstür Analizi</h1>
     <p class="intro">Piyasa oranlarından türetilen gol ve clean-sheet görünümü.</p>
     <div class="hero-note"><span aria-hidden="true">✦</span> Bir sonraki gameweek için güncel model çıktısı</div>
   </header>
@@ -25,7 +25,7 @@
         <div class="summary-grid" aria-label="Projeksiyon özeti">
           <div class="summary-card"><span>Toplam maç</span><strong>{{ fixtures().length }}</strong></div>
           <div class="summary-card accent"><span>Projeksiyon hazır</span><strong>{{ projectedCount() }}</strong></div>
-          <div class="summary-card muted"><span>Odds bekleniyor</span><strong>{{ unavailableCount() }}</strong></div>
+          <div class="summary-card muted"><span>Oran verisi bekleniyor</span><strong>{{ unavailableCount() }}</strong></div>
         </div>
       }
       @if (fixtures().length === 0) { <p>Yaklaşan gameweek için fikstür bulunamadı.</p> }
@@ -40,7 +40,7 @@
                 <td><span class="clean-sheet">{{ projection.homeCleanSheet | percent:'1.0-0' }}</span><span class="metric-separator">–</span><span class="clean-sheet">{{ projection.awayCleanSheet | percent:'1.0-0' }}</span></td>
                 <td class="scores">@for (score of projection.topScores; track $index) { <span class="score">{{ score.homeGoals }}–{{ score.awayGoals }} <small>{{ score.probability | percent:'1.0-0' }}</small></span> }</td>
               } @else {
-                <td colspan="3"><span class="unavailable">{{ fixture.status === 'match-unavailable' ? 'Odds etkinliği henüz yok' : 'Yeterli odds marketi yok' }}</span></td>
+                <td colspan="3"><span class="unavailable">{{ fixture.status === 'match-unavailable' ? 'Bu maç için henüz oran verisi yok' : 'Yeterli oran piyasası yok' }}</span></td>
               }
             </tr>
           }
