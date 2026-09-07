@@ -5,6 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "normalize:badges": "node scripts/normalize-badges.mjs",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
@@ -25,6 +26,7 @@
     "@angular/cli": "^22.1.7",
     "@angular/compiler-cli": "^22.1.0",
     "prettier": "^3.8.1",
+    "sharp": "^0.35.4",
     "typescript": "~6.0.2"
   }
 }

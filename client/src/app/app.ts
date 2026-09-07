@@ -2,6 +2,12 @@ import { DatePipe, DecimalPipe, PercentPipe } from '@angular/common';
 import { Component, computed, signal } from '@angular/core';
 import { Fixture, FixturesService } from './services/fixtures';
 
+type FixtureGroup = { date: string; kickoffUtc: string; fixtures: Fixture[] };
+
+const TEAM_COLORS: Record<number, string> = {
+  1: '#da291c', 2: '#ffcd00', 3: '#ef0107', 4: '#241f20', 6: '#132257', 7: '#670e36', 8: '#034694', 9: '#6cabdd', 11: '#003399', 14: '#c8102e', 17: '#e53233', 31: '#1b458f', 36: '#0057b8', 40: '#3a64a3', 43: '#6cabdd', 54: '#111111', 56: '#eb172b', 88: '#f5a000', 91: '#da291c', 94: '#e30613',
+};
+
 @Component({
   selector: 'app-root',
   imports: [DatePipe, DecimalPipe, PercentPipe],
@@ -17,6 +23,26 @@ export class App {
     this.fixtures().filter((fixture) => fixture.status === 'projected').length,
   );
   protected readonly unavailableCount = computed(() => this.fixtures().length - this.projectedCount());
+  protected readonly fixtureGroups = computed<FixtureGroup[]>(() => {
+    const groups = new Map<string, Fixture[]>();
+    for (const fixture of this.fixtures()) {
+      const date = fixture.kickoffUtc.slice(0, 10);
+      groups.set(date, [...(groups.get(date) ?? []), fixture]);
+    }
+    return [...groups.entries()].map(([date, fixtures]) => ({ date, kickoffUtc: fixtures[0].kickoffUtc, fixtures }));
+  });
+
+  protected badgeUrl(teamCode: number): string {
+    return `/badges/${teamCode}.webp?v=2`;
+  }
+
+  protected teamColor(teamCode: number): string {
+    return TEAM_COLORS[teamCode] ?? '#5d2db5';
+  }
+
+  protected hideBadge(event: Event): void {
+    (event.currentTarget as HTMLImageElement).hidden = true;
+  }
 
   constructor(private readonly fixturesService: FixturesService) {
     this.reload();

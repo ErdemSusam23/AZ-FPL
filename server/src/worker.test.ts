@@ -37,7 +37,7 @@ test('fixtures route nihai cevabı cacheleyerek ikinci istekte kaynak API çağr
     fetchCount += 1;
     const url = String(input);
     if (url.endsWith('/bootstrap-static/')) {
-      return Response.json({ teams: [{ id: 1, name: 'Arsenal' }, { id: 2, name: 'Chelsea' }], events: [{ id: 3, is_next: true }] });
+      return Response.json({ teams: [{ id: 1, code: 3, name: 'Arsenal' }, { id: 2, code: 8, name: 'Chelsea' }], events: [{ id: 3, is_next: true }] });
     }
     if (url.endsWith('/fixtures/')) {
       return Response.json([{ id: 99, event: 3, finished: false, kickoff_time: '2026-09-12T14:00:00Z', team_h: 1, team_a: 2 }]);
@@ -48,7 +48,12 @@ test('fixtures route nihai cevabı cacheleyerek ikinci istekte kaynak API çağr
   try {
     const first = await worker.fetch(new Request('https://example.test/api/fixtures'), env);
     assert.equal(first.status, 200);
-    assert.equal((await first.json() as { fixtures: unknown[] }).fixtures.length, 1);
+    const firstBody = await first.json() as { fixtures: Array<{ homeTeamCode: number; awayTeamCode: number; projection?: { homeWin: number; awayWin: number } }> };
+    assert.equal(firstBody.fixtures.length, 1);
+    assert.equal(firstBody.fixtures[0].homeTeamCode, 3);
+    assert.equal(firstBody.fixtures[0].awayTeamCode, 8);
+    assert.ok(firstBody.fixtures[0].projection?.homeWin);
+    assert.ok(firstBody.fixtures[0].projection?.awayWin);
     assert.equal(fetchCount, 3);
 
     const second = await worker.fetch(new Request('https://example.test/api/fixtures'), env);

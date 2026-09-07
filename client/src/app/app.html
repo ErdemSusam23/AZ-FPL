@@ -30,21 +30,35 @@
       }
       @if (fixtures().length === 0) { <p>Yaklaşan gameweek için fikstür bulunamadı.</p> }
       @else {
-        <div class="table-wrap"><table><thead><tr><th>Tarih</th><th>Maç</th><th>Beklenen gol <span class="table-hint">Ev – Dep.</span></th><th>Clean sheet <span class="table-hint">Ev – Dep.</span></th><th>En olası skorlar</th></tr></thead><tbody>
-          @for (fixture of fixtures(); track fixture.fixtureId) {
-            <tr>
-              <td class="kickoff">{{ fixture.kickoffUtc | date:'d MMM':'UTC':'tr-TR' }}<span>{{ fixture.kickoffUtc | date:'HH:mm':'UTC':'tr-TR' }}</span></td>
-              <td class="teams"><strong>{{ fixture.homeTeam }}</strong><span class="versus">vs</span><strong>{{ fixture.awayTeam }}</strong></td>
-              @if (fixture.projection; as projection) {
-                <td><span class="metric-value">{{ projection.lambdaHome | number:'1.2-2' }}</span><span class="metric-separator">–</span><span class="metric-value">{{ projection.lambdaAway | number:'1.2-2' }}</span></td>
-                <td><span class="clean-sheet">{{ projection.homeCleanSheet | percent:'1.0-0' }}</span><span class="metric-separator">–</span><span class="clean-sheet">{{ projection.awayCleanSheet | percent:'1.0-0' }}</span></td>
-                <td class="scores">@for (score of projection.topScores; track $index) { <span class="score">{{ score.homeGoals }}–{{ score.awayGoals }} <small>{{ score.probability | percent:'1.0-0' }}</small></span> }</td>
-              } @else {
-                <td colspan="3"><span class="unavailable">{{ fixture.status === 'match-unavailable' ? 'Bu maç için henüz oran verisi yok' : 'Yeterli oran piyasası yok' }}</span></td>
+        <div class="match-list">
+          @for (group of fixtureGroups(); track group.date) {
+            <section class="date-group" [attr.aria-label]="group.date + ' maçları'">
+              <h3>{{ group.kickoffUtc | date:'d MMMM, EEEE':'UTC':'tr-TR' }}</h3>
+              @for (fixture of group.fixtures; track fixture.fixtureId) {
+                <article class="match-card">
+                  <p class="kickoff"><time [attr.datetime]="fixture.kickoffUtc">{{ fixture.kickoffUtc | date:'HH:mm':'UTC':'tr-TR' }}</time></p>
+                  <div class="match-panels">
+                    <section class="team-panel home" [style.--team-color]="teamColor(fixture.homeTeamCode)" [attr.aria-label]="fixture.homeTeam + ' ev sahibi analizi'">
+                      <img class="team-badge" [src]="badgeUrl(fixture.homeTeamCode)" alt="" (error)="hideBadge($event)">
+                      @if (fixture.projection; as projection) {
+                        <dl class="team-stats"><div><dt>Kazanma</dt><dd>{{ projection.homeWin | percent:'1.0-0' }}</dd></div><div><dt>Clean-sheet</dt><dd>{{ projection.homeCleanSheet | percent:'1.0-0' }}</dd></div><div><dt>Beklenen gol</dt><dd>{{ projection.lambdaHome | number:'1.2-2' }}</dd></div></dl>
+                      }
+                    </section>
+                    <section class="team-panel away" [style.--team-color]="teamColor(fixture.awayTeamCode)" [attr.aria-label]="fixture.awayTeam + ' deplasman analizi'">
+                      <img class="team-badge" [src]="badgeUrl(fixture.awayTeamCode)" alt="" (error)="hideBadge($event)">
+                      @if (fixture.projection; as projection) {
+                        <dl class="team-stats"><div><dt>Beklenen gol</dt><dd>{{ projection.lambdaAway | number:'1.2-2' }}</dd></div><div><dt>Clean-sheet</dt><dd>{{ projection.awayCleanSheet | percent:'1.0-0' }}</dd></div><div><dt>Kazanma</dt><dd>{{ projection.awayWin | percent:'1.0-0' }}</dd></div></dl>
+                      }
+                    </section>
+                    @if (!fixture.projection) {
+                      <p class="unavailable">{{ fixture.status === 'match-unavailable' ? 'Bu maç için henüz oran verisi yok' : 'Yeterli oran piyasası yok' }}</p>
+                    }
+                  </div>
+                </article>
               }
-            </tr>
+            </section>
           }
-        </tbody></table></div>
+        </div>
       }
     </section>
   }

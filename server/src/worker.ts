@@ -15,7 +15,7 @@ type FixturesResponse = {
   oddsUpdatedAt: string;
 };
 
-const fixtureResponseCacheKey = 'fixtures:response:next';
+const fixtureResponseCacheKey = 'fixtures:response:next:v2';
 const fixtureResponseTtlSeconds = 60 * 60;
 
 function createCache(env: Env): Cache {
@@ -28,7 +28,7 @@ function createCache(env: Env): Cache {
 async function getFixturesResponse(cache: Cache, env: Env): Promise<FixturesResponse> {
   return cache.getOrSet(fixtureResponseCacheKey, fixtureResponseTtlSeconds, async () => {
     const fixtures = await cache.getOrSet(
-      'fpl:fixtures:next',
+      'fpl:fixtures:next:v2',
       6 * 60 * 60,
       getNextGameweekFixtures,
     );

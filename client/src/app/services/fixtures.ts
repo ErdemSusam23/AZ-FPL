@@ -6,6 +6,8 @@ export type ScoreProbability = { homeGoals: number; awayGoals: number; probabili
 export type Projection = {
   lambdaHome: number;
   lambdaAway: number;
+  homeWin: number;
+  awayWin: number;
   homeCleanSheet: number;
   awayCleanSheet: number;
   topScores: ScoreProbability[];
@@ -14,7 +16,9 @@ export type Fixture = {
   fixtureId: number;
   kickoffUtc: string;
   homeTeam: string;
+  homeTeamCode: number;
   awayTeam: string;
+  awayTeamCode: number;
   status: 'projected' | 'market-unavailable' | 'match-unavailable';
   projection?: Projection;
 };
