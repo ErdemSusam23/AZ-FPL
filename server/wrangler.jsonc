@@ -6,5 +6,15 @@
   "assets": {
     "directory": "../client/dist/client/browser",
     "binding": "ASSETS"
-  }
+  },
+  "ratelimits": [
+    {
+      "name": "FIXTURES_RATE_LIMITER",
+      "namespace_id": "318471905",
+      "simple": {
+        "limit": 30,
+        "period": 60
+      }
+    }
+  ]
 }

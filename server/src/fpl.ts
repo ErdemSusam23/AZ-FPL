@@ -1,4 +1,5 @@
 const FPL_API = 'https://fantasy.premierleague.com/api';
+const FPL_REQUEST_TIMEOUT_MS = 8_000;
 
 export type FplTeam = { id: number; code: number; name: string };
 type FplEvent = { id: number; is_next: boolean };
@@ -16,7 +17,7 @@ export type UpcomingFixture = {
 };
 
 async function fetchFpl<T>(path: string): Promise<T> {
-  const response = await fetch(`${FPL_API}${path}`);
+  const response = await fetch(`${FPL_API}${path}`, { signal: AbortSignal.timeout(FPL_REQUEST_TIMEOUT_MS) });
   if (!response.ok) throw new Error(`FPL API ${response.status} döndürdü.`);
   return response.json() as Promise<T>;
 }

@@ -49,17 +49,6 @@ export class Cache {
     return request;
   }
 
-  async connectionStatus(): Promise<'memory' | 'redis-ready' | 'redis-unavailable'> {
-    if (!this.redis) return 'memory';
-    try {
-      await this.redis.ping();
-      return 'redis-ready';
-    } catch (error) {
-      console.warn('Redis bağlantısı doğrulanamadı.', error);
-      return 'redis-unavailable';
-    }
-  }
-
   async getOrSetDynamic<T>(key: string, loader: DynamicLoader<T>): Promise<T> {
     const cached = await this.get<T>(key);
     if (cached !== null) return cached;

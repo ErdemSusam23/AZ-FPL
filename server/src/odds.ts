@@ -2,6 +2,7 @@ import { Cache } from './cache.js';
 
 const ODDS_API = 'https://api.the-odds-api.com/v4';
 const ODDS_CACHE_KEY = 'odds:epl:upcoming';
+const ODDS_REQUEST_TIMEOUT_MS = 8_000;
 
 export type OddsOutcome = { name: string; price: number; point?: number };
 export type OddsMarket = { key: 'h2h' | 'totals' | string; outcomes: OddsOutcome[] };
@@ -33,7 +34,7 @@ function oddsTtlSeconds(events: OddsEvent[]): number {
 async function fetchEplOdds(apiKey: string): Promise<{ value: EplOdds; ttlSeconds: number }> {
   const url = new URL(`${ODDS_API}/sports/soccer_epl/odds/`);
   url.search = new URLSearchParams({ apiKey, regions: 'uk', markets: 'h2h,totals', oddsFormat: 'decimal' }).toString();
-  const response = await fetch(url);
+  const response = await fetch(url, { signal: AbortSignal.timeout(ODDS_REQUEST_TIMEOUT_MS) });
   if (!response.ok) throw new Error(`Odds API ${response.status} döndürdü.`);
 
   const events = await response.json() as OddsEvent[];
