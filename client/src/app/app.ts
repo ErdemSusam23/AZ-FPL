@@ -47,11 +47,10 @@ export class App {
     return TEAM_COLORS[teamCode] ?? '#5d2db5';
   }
 
-  protected cleanSheetColor(cleanSheet: number): string {
+  protected cleanSheetIntensity(cleanSheet: number): number {
     const intensity = this.maxCleanSheet() > 0 ? cleanSheet / this.maxCleanSheet() : 0;
-    const lightness = 46 - (Math.min(Math.max(intensity, 0), 1) * 18);
 
-    return `hsl(145 58% ${lightness}%)`;
+    return Math.min(Math.max(intensity, 0), 1);
   }
 
   protected hideBadge(event: Event): void {
