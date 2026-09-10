@@ -19,5 +19,8 @@
     "tsx": "^4.20.6",
     "typescript": "^5.9.3",
     "wrangler": "^4.0.0"
+  },
+  "overrides": {
+    "sharp": "0.35.4"
   }
 }

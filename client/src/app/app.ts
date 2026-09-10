@@ -23,6 +23,13 @@ export class App {
     this.fixtures().filter((fixture) => fixture.status === 'projected').length,
   );
   protected readonly unavailableCount = computed(() => this.fixtures().length - this.projectedCount());
+  protected readonly maxCleanSheet = computed(() => {
+    const cleanSheetValues = this.fixtures().flatMap(({ projection }) =>
+      projection ? [projection.homeCleanSheet, projection.awayCleanSheet] : [],
+    );
+
+    return Math.max(...cleanSheetValues, 0);
+  });
   protected readonly fixtureGroups = computed<FixtureGroup[]>(() => {
     const groups = new Map<string, Fixture[]>();
     for (const fixture of this.fixtures()) {
@@ -38,6 +45,13 @@ export class App {
 
   protected teamColor(teamCode: number): string {
     return TEAM_COLORS[teamCode] ?? '#5d2db5';
+  }
+
+  protected cleanSheetColor(cleanSheet: number): string {
+    const intensity = this.maxCleanSheet() > 0 ? cleanSheet / this.maxCleanSheet() : 0;
+    const lightness = 46 - (Math.min(Math.max(intensity, 0), 1) * 18);
+
+    return `hsl(145 58% ${lightness}%)`;
   }
 
   protected hideBadge(event: Event): void {

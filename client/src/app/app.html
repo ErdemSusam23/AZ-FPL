@@ -41,13 +41,13 @@
                     <section class="team-panel home" [style.--team-color]="teamColor(fixture.homeTeamCode)" [attr.aria-label]="fixture.homeTeam + ' ev sahibi analizi'">
                       <img class="team-badge" [src]="badgeUrl(fixture.homeTeamCode)" alt="" (error)="hideBadge($event)">
                       @if (fixture.projection; as projection) {
-                        <dl class="team-stats"><div><dt>Kazanma</dt><dd>{{ projection.homeWin | percent:'1.0-0' }}</dd></div><div><dt>Clean-sheet</dt><dd>{{ projection.homeCleanSheet | percent:'1.0-0' }}</dd></div><div><dt>Beklenen gol</dt><dd>{{ projection.lambdaHome | number:'1.2-2' }}</dd></div></dl>
+                        <dl class="team-stats"><div><dt>Kazanma</dt><dd>{{ projection.homeWin | percent:'1.0-0' }}</dd></div><div><dt>Clean-sheet</dt><dd class="clean-sheet-value" [style.color]="cleanSheetColor(projection.homeCleanSheet)">{{ projection.homeCleanSheet | percent:'1.0-0' }}</dd></div><div><dt>Beklenen gol</dt><dd>{{ projection.lambdaHome | number:'1.2-2' }}</dd></div></dl>
                       }
                     </section>
                     <section class="team-panel away" [style.--team-color]="teamColor(fixture.awayTeamCode)" [attr.aria-label]="fixture.awayTeam + ' deplasman analizi'">
                       <img class="team-badge" [src]="badgeUrl(fixture.awayTeamCode)" alt="" (error)="hideBadge($event)">
                       @if (fixture.projection; as projection) {
-                        <dl class="team-stats"><div><dt>Beklenen gol</dt><dd>{{ projection.lambdaAway | number:'1.2-2' }}</dd></div><div><dt>Clean-sheet</dt><dd>{{ projection.awayCleanSheet | percent:'1.0-0' }}</dd></div><div><dt>Kazanma</dt><dd>{{ projection.awayWin | percent:'1.0-0' }}</dd></div></dl>
+                        <dl class="team-stats"><div><dt>Beklenen gol</dt><dd>{{ projection.lambdaAway | number:'1.2-2' }}</dd></div><div><dt>Clean-sheet</dt><dd class="clean-sheet-value" [style.color]="cleanSheetColor(projection.awayCleanSheet)">{{ projection.awayCleanSheet | percent:'1.0-0' }}</dd></div><div><dt>Kazanma</dt><dd>{{ projection.awayWin | percent:'1.0-0' }}</dd></div></dl>
                       }
                     </section>
                     @if (!fixture.projection) {
