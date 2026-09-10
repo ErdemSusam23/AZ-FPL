@@ -12,6 +12,8 @@ const aliases: Record<string, string> = {
   "manchestercity": 'manchestercity',
   "leeds": 'leedsunited',
   "leedsunited": 'leedsunited',
+  "newcastle": 'newcastleunited',
+  "newcastleunited": 'newcastleunited',
 };
 
 export function normalizeTeamName(name: string): string {

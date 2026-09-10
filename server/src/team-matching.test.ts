@@ -9,6 +9,7 @@ test('FPL kısaltmalarını gerçek Odds API takım adlarıyla eşleştirir', ()
   assert.equal(teamsMatch('Man Utd', 'Manchester United'), true);
   assert.equal(teamsMatch('Man City', 'Manchester City'), true);
   assert.equal(teamsMatch('Leeds', 'Leeds United'), true);
+  assert.equal(teamsMatch('Newcastle', 'Newcastle United'), true);
 });
 
 test('farklı takımları eşleştirmez', () => {

@@ -15,7 +15,7 @@ type FixturesResponse = {
   oddsUpdatedAt: string;
 };
 
-const fixtureResponseCacheKey = 'fixtures:response:next:v2';
+const fixtureResponseCacheKey = 'fixtures:response:next:v3';
 const fixtureResponseTtlSeconds = 60 * 60;
 
 function createCache(env: Env): Cache {
