@@ -4,6 +4,14 @@ import { Fixture, FixturesService } from './services/fixtures';
 
 type FixtureGroup = { date: string; kickoffUtc: string; fixtures: Fixture[] };
 
+const TURKEY_TIME_ZONE = 'Europe/Istanbul';
+const turkeyDateFormatter = new Intl.DateTimeFormat('en-CA', {
+  timeZone: TURKEY_TIME_ZONE,
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+});
+
 const TEAM_COLORS: Record<number, string> = {
   1: '#da291c', 2: '#ffcd00', 3: '#ef0107', 4: '#241f20', 6: '#132257', 7: '#670e36', 8: '#034694', 9: '#6cabdd', 11: '#003399', 14: '#c8102e', 17: '#e53233', 31: '#1b458f', 36: '#0057b8', 40: '#3a64a3', 43: '#6cabdd', 54: '#111111', 56: '#eb172b', 88: '#f5a000', 91: '#da291c', 94: '#e30613',
 };
@@ -33,7 +41,7 @@ export class App {
   protected readonly fixtureGroups = computed<FixtureGroup[]>(() => {
     const groups = new Map<string, Fixture[]>();
     for (const fixture of this.fixtures()) {
-      const date = fixture.kickoffUtc.slice(0, 10);
+      const date = turkeyDateFormatter.format(new Date(fixture.kickoffUtc));
       groups.set(date, [...(groups.get(date) ?? []), fixture]);
     }
     return [...groups.entries()].map(([date, fixtures]) => ({ date, kickoffUtc: fixtures[0].kickoffUtc, fixtures }));

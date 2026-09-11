@@ -7,7 +7,7 @@
   </header>
   <div class="toolbar" aria-label="Veri kontrolleri">
     @if (oddsUpdatedAt()) {
-      <p class="updated-at"><span class="status-dot" aria-hidden="true"></span> Oranlar: {{ oddsUpdatedAt() | date:'d MMM, HH:mm':'UTC':'tr-TR' }}</p>
+      <p class="updated-at"><span class="status-dot" aria-hidden="true"></span> Oranlar: {{ oddsUpdatedAt() | date:'d MMM, HH:mm':'Europe/Istanbul':'tr-TR' }}</p>
     }
     <button type="button" (click)="reload()" [disabled]="loading()">{{ loading() ? 'Kontrol ediliyor…' : 'Verileri kontrol et' }}</button>
   </div>
@@ -33,10 +33,10 @@
         <div class="match-list">
           @for (group of fixtureGroups(); track group.date) {
             <section class="date-group" [attr.aria-label]="group.date + ' maçları'">
-              <h3>{{ group.kickoffUtc | date:'d MMMM, EEEE':'UTC':'tr-TR' }}</h3>
+              <h3>{{ group.kickoffUtc | date:'d MMMM, EEEE':'Europe/Istanbul':'tr-TR' }}</h3>
               @for (fixture of group.fixtures; track fixture.fixtureId) {
                 <article class="match-card">
-                  <p class="kickoff"><time [attr.datetime]="fixture.kickoffUtc">{{ fixture.kickoffUtc | date:'HH:mm':'UTC':'tr-TR' }}</time></p>
+                  <p class="kickoff"><time [attr.datetime]="fixture.kickoffUtc">{{ fixture.kickoffUtc | date:'HH:mm':'Europe/Istanbul':'tr-TR' }}</time></p>
                   <div class="match-panels">
                     <section class="team-panel home" [style.--team-color]="teamColor(fixture.homeTeamCode)" [attr.aria-label]="fixture.homeTeam + ' ev sahibi analizi'">
                       <img class="team-badge" [src]="badgeUrl(fixture.homeTeamCode)" alt="" (error)="hideBadge($event)">
